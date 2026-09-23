@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Learning System</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans, Prompt & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #eef2ff;
+            --secondary: #06b6d4;
+            --accent: #10b981;
+            --bg-gradient: radial-gradient(circle at 10% 20%, rgba(224, 231, 255, 0.7) 0%, rgba(241, 245, 249, 0.9) 90%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.9);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 12px 24px -6px rgba(79, 70, 229, 0.08);
+            --shadow-lg: 0 20px 30px -10px rgba(79, 70, 229, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', 'Prompt', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1040px;
+            margin: auto;
+        }
+
+        /* ================= HEADER ================= */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 14px;
+            letter-spacing: -0.8px;
+        }
+
+        .student-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 24px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            padding: 10px 28px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 18px;
+            font-size: 15px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .student-info b {
+            color: var(--primary);
+        }
+
+        .header-subtext {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        /* ================= MENU GRID & CARDS ================= */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .cipher-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 32px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Ambient Glow behind cards */
+        .cipher-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.12) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            transition: transform 0.5s ease;
+            pointer-events: none;
+        }
+
+        .cipher-card:hover::after {
+            transform: scale(1.8);
+        }
+
+        .cipher-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(79, 70, 229, 0.3);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .cipher-card:hover .card-icon {
+            transform: rotate(-8deg) scale(1.1);
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .cipher-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cipher-card h2 .arrow {
+            font-size: 18px;
+            color: var(--primary);
+            opacity: 0.3;
+            transform: translateX(-6px);
+            transition: all 0.3s ease;
+        }
+
+        .cipher-card:hover h2 .arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .cipher-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ================= PAGE CONTROL & ANIMATION ================= */
+        .page {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .page.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ================= FORM & CIPHER PAGE ================= */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .form-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            padding: 36px;
+            border-radius: 28px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1.5px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        /* ================= BUTTONS ================= */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+            flex: 2;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+        }
+
+        .btn-example {
+            background: #ffffff;
+            color: #334155;
+            border: 1.5px solid var(--border-color);
+            flex: 1;
+        }
+
+        .btn-example:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: var(--text-main);
+        }
+
+        .btn-back {
+            background: #ffffff;
+            color: var(--text-muted);
+            border: 1.5px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 12px;
+        }
+
+        .btn-back:hover {
+            background: #f8fafc;
+            color: var(--text-main);
+        }
+
+        button:active {
+            transform: translateY(0) !important;
+        }
+
+        /* ================= RESULT BOX & COPY BUTTON ================= */
+        .result-box {
+            margin-top: 32px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .result-box h2 {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+
+        .btn-copy {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-copy:hover {
+            background: var(--primary);
+            color: #ffffff;
+        }
+
+        .result {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            word-break: break-all;
+            background: var(--primary-light);
+            padding: 18px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            margin-bottom: 24px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .steps-container {
+            margin-top: 20px;
+        }
+
+        .steps {
+            background: #0f172a;
+            color: #f1f5f9;
+            padding: 22px;
+            border-radius: 16px;
+            white-space: pre-line;
+            line-height: 1.7;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .error {
+            color: #ef4444;
+            background: #fef2f2;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            display: block;
+            border: 1px solid #fecaca;
+            font-family: sans-serif;
+        }
+
+        /* Scrollbar Styling */
+        .steps::-webkit-scrollbar {
+            width: 8px;
+        }
+        .steps::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        .steps::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 640px) {
+            .student-info {
+                flex-direction: column;
+                gap: 4px;
+                border-radius: 18px;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .btn-primary, .btn-example, .btn-back {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ================= HOME PAGE ================= -->
+    <div id="homePage" class="page active">
+
+        <div class="header">
+            <h1>Cipher Learning System</h1>
+
+            <div class="student-info">
+                <p><b>รหัสนักศึกษา:</b> 6704101310</p>
+                <p><b>ชื่อ:</b> นางสาวกุริญา ทาเทร์</p>
+            </div>
+
+            <p class="header-subtext">เลือกอัลกอริทึมการเข้ารหัสและถอดรหัสเพื่อเริ่มเรียนรู้การทำงาน</p>
+        </div>
+
+        <div class="menu-grid">
+
+            <div class="cipher-card" onclick="openCipher('caesar')">
+                <div>
+                    <div class="card-icon">⚡</div>
+                    <h2>Caesar Cipher <span class="arrow">→</span></h2>
+                    <p>เข้ารหัสโดยการเลื่อนตำแหน่งตัวอักษรตามค่า Key ที่กำหนดแบบวนลูป</p>
+                </div>
+            </div>
+
+            <div class="cipher-card" onclick="openCipher('mono')">
+                <div>
+                    <div class="card-icon">🔤</div>
+                    <h2>Mono-alphabetic <span class="arrow">→</span></h2>
+                    <p>แทนที่ตัวอักษรแต่ละตัวด้วยชุดตัวอักษร 26 ตัวที่กำหนดแบบสลับตำแหน่ง</p>
+                </div>
+            </div>
+
+            <div class="cipher-card" onclick="openCipher('poly')">
+                <div>
+                    <div class="card-icon">🔑</div>
+                    <h2>Polyalphabetic <span class="arrow">→</span></h2>
+                    <p>การเข้ารหัสแบบหลายชุดตัวอักษรโดยใช้คำเป็น Key (Vigenère Cipher)</p>
+                </div>
+            </div>
+
+            <div class="cipher-card" onclick="openCipher('otp')">
+                <div>
+                    <div class="card-icon">🛡️</div>
+                    <h2>One-time Pad <span class="arrow">→</span></h2>
+                    <p>ระบบเข้ารหัสที่มีความปลอดภัยสูงสุด โดยใช้ Key สุ่มยาวเท่ากับข้อความ</p>
+                </div>
+            </div>
+
+            <div class="cipher-card" onclick="openCipher('playfair')">
+                <div>
+                    <div class="card-icon">🧩</div>
+                    <h2>Playfair Cipher <span class="arrow">→</span></h2>
+                    <p>การเข้ารหัสข้อความทีละคู่ตัวอักษรโดยคำนวณผ่านตารางเมทริกซ์ 5x5</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ================= CIPHER PAGE ================= -->
+
+    <div id="cipherPage" class="page">
+
+        <div class="page-header">
+            <h1 id="cipherTitle">Cipher</h1>
+            <button class="btn-back" onclick="goHome()">← กลับหน้าหลัก</button>
+        </div>
+
+        <div class="form-box">
+
+            <div class="input-group">
+                <label>เลือกวิธีการ (Mode)</label>
+                <select id="mode">
+                    <option value="encode">Encode (เข้ารหัส)</option>
+                    <option value="decode">Decode (ถอดรหัส)</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>คีย์ (Key)</label>
+                <input type="text" id="keyInput" placeholder="กำหนด Key สำหรับคำนวณ">
+            </div>
+
+            <div class="input-group">
+                <label>ข้อความ (Plaintext / Ciphertext)</label>
+                <textarea id="textInput" placeholder="ป้อนข้อความภาษาอังกฤษที่ต้องการ..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-example" onclick="loadExample()">⚡ โหลดตัวอย่าง</button>
+                <button class="btn-primary" onclick="processCipher()">🚀 คำนวณผลลัพธ์</button>
+            </div>
+
+            <div class="result-box">
+
+                <div class="result-header">
+                    <h2>ผลลัพธ์ (Result)</h2>
+                    <button class="btn-copy" onclick="copyResult()">📋 ก๊อปปี้ข้อความ</button>
+                </div>
+                <div id="result" class="result">-</div>
+
+                <div class="steps-container">
+                    <h2>ขั้นตอนการคำนวณ (Step-by-Step)</h2>
+                    <div id="steps" class="steps">ยังไม่มีข้อมูลการคำนวณ</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let currentCipher = "";
+
+
+/* ================= PAGE CONTROL ================= */
+
+function openCipher(cipher) {
+
+    currentCipher = cipher;
+
+    document.getElementById("homePage").classList.remove("active");
+    
+    setTimeout(() => {
+        document.getElementById("cipherPage").classList.add("active");
+    }, 100);
+
+    const titles = {
+        caesar: "Caesar Cipher",
+        mono: "Mono-alphabetic Cipher",
+        poly: "Polyalphabetic Cipher",
+        otp: "One-time Pad",
+        playfair: "Playfair Cipher"
+    };
+
+    document.getElementById("cipherTitle").innerText = titles[cipher];
+
+    document.getElementById("result").innerText = "-";
+    document.getElementById("steps").innerText = "ยังไม่มีข้อมูลการคำนวณ";
+    document.getElementById("keyInput").value = "";
+    document.getElementById("textInput").value = "";
+}
+
+
+function goHome() {
+
+    document.getElementById("cipherPage").classList.remove("active");
+    
+    setTimeout(() => {
+        document.getElementById("homePage").classList.add("active");
+    }, 100);
+
+}
+
+
+/* ================= COPY FUNCTION ================= */
+
+function copyResult() {
+    const resultText = document.getElementById("result").innerText;
+    if (resultText && resultText !== "-") {
+        navigator.clipboard.writeText(resultText);
+        const copyBtn = document.querySelector(".btn-copy");
+        copyBtn.innerText = "✓ คัดลอกแล้ว!";
+        setTimeout(() => {
+            copyBtn.innerText = "📋 ก๊อปปี้ข้อความ";
+        }, 2000);
+    }
+}
+
+
+/* ================= EXAMPLE ================= */
+
+function loadExample() {
+
+    const mode = document.getElementById("mode").value;
+
+    if (currentCipher === "caesar") {
+
+        document.getElementById("keyInput").value = "3";
+
+        if (mode === "encode") {
+            document.getElementById("textInput").value = "HELLO";
+        } else {
+            document.getElementById("textInput").value = "KHOOR";
+        }
+
+    }
+
+    else if (currentCipher === "mono") {
+
+        document.getElementById("keyInput").value =
+            "QWERTYUIOPASDFGHJKLZXCVBNM";
+
+        document.getElementById("textInput").value = "HELLO";
+
+    }
+
+    else if (currentCipher === "poly") {
+
+        document.getElementById("keyInput").value = "KEY";
+        document.getElementById("textInput").value = "HELLO";
+
+    }
+
+    else if (currentCipher === "otp") {
+
+        document.getElementById("keyInput").value = "XMCKL";
+        document.getElementById("textInput").value = "HELLO";
+
+    }
+
+    else if (currentCipher === "playfair") {
+
+        document.getElementById("keyInput").value = "MONARCHY";
+        document.getElementById("textInput").value = "INSTRUMENTS";
+
+    }
+
+}
+
+
+/* ================= MAIN PROCESS ================= */
+
+function processCipher() {
+
+    const mode = document.getElementById("mode").value;
+    const key = document.getElementById("keyInput").value.toUpperCase();
+    const text = document.getElementById("textInput").value.toUpperCase();
+
+    if (!text || !key) {
+
+        document.getElementById("result").innerHTML =
+            "<span class='error'>⚠️ กรุณาป้อนข้อความและ Key ให้ครบถ้วน</span>";
+
+        return;
+    }
+
+    let result = "";
+    let steps = "";
+
+    if (currentCipher === "caesar") {
+
+        const data = caesarCipher(text, key, mode);
+
+        result = data.result;
+        steps = data.steps;
+
+    }
+
+    else if (currentCipher === "mono") {
+
+        const data = monoAlphabetic(text, key, mode);
+
+        result = data.result;
+        steps = data.steps;
+
+    }
+
+    else if (currentCipher === "poly") {
+
+        const data = polyAlphabetic(text, key, mode);
+
+        result = data.result;
+        steps = data.steps;
+
+    }
+
+    else if (currentCipher === "otp") {
+
+        const data = oneTimePad(text, key, mode);
+
+        result = data.result;
+        steps = data.steps;
+
+    }
+
+    else if (currentCipher === "playfair") {
+
+        const data = playfairCipher(text, key, mode);
+
+        result = data.result;
+        steps = data.steps;
+
+    }
+
+    document.getElementById("result").innerText = result;
+    document.getElementById("steps").innerText = steps;
+
+}
+
+
+/* ================================================= */
+/* ================= CAESAR CIPHER ================= */
+/* ================================================= */
+
+function caesarCipher(text, key, mode) {
+
+    let shift = parseInt(key);
+
+    if (isNaN(shift)) {
+
+        return {
+            result: "Key ต้องเป็นตัวเลขเท่านั้น",
+            steps: ""
+        };
+
+    }
+
+    if (mode === "decode") {
+        shift = -shift;
+    }
+
+    let result = "";
+    let steps = "";
+
+    for (let char of text) {
+
+        if (char >= "A" && char <= "Z") {
+
+            let oldCode = char.charCodeAt(0) - 65;
+
+            let newCode = (oldCode + shift + 26) % 26;
+
+            let newChar = String.fromCharCode(newCode + 65);
+
+            result += newChar;
+
+            steps += `${char} → ${newChar} (เลื่อน ${shift} ตำแหน่ง)\n`;
+
+        } else {
+
+            result += char;
+
+        }
+
+    }
+
+    steps += "\nสูตรการคำนวณ:\n";
+
+    if (mode === "encode") {
+        steps += "C = (P + Key) mod 26";
+    } else {
+        steps += "P = (C - Key) mod 26";
+    }
+
+    return {
+        result,
+        steps
+    };
+
+}
+
+
+/* ================================================= */
+/* ============== MONO-ALPHABETIC ================== */
+/* ================================================= */
+
+function monoAlphabetic(text, key, mode) {
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if (key.length !== 26) {
+
+        return {
+            result: "Key ต้องมีตัวอักษรครบ 26 ตัว",
+            steps: ""
+        };
+
+    }
+
+    let result = "";
+    let steps = "";
+
+    for (let char of text) {
+
+        let index = alphabet.indexOf(char);
+
+        if (index !== -1) {
+
+            let newChar;
+
+            if (mode === "encode") {
+
+                newChar = key[index];
+
+            } else {
+
+                let keyIndex = key.indexOf(char);
+
+                newChar = keyIndex !== -1
+                    ? alphabet[keyIndex]
+                    : char;
+
+            }
+
+            result += newChar;
+
+            steps += `${char} → ${newChar}\n`;
+
+        } else {
+
+            result += char;
+
+        }
+
+    }
+
+    steps += "\nKey Mapping Table:\n";
+    steps += "PLAIN : " + alphabet + "\n";
+    steps += "CIPHER: " + key;
+
+    return {
+        result,
+        steps
+    };
+
+}
+
+
+/* ================================================= */
+/* ============== POLYALPHABETIC =================== */
+/* ================================================= */
+
+function polyAlphabetic(text, key, mode) {
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    key = key.replace(/[^A-Z]/g, "");
+
+    let result = "";
+    let steps = "";
+    let keyIndex = 0;
+
+    for (let char of text) {
+
+        if (alphabet.includes(char)) {
+
+            let p = alphabet.indexOf(char);
+            let k = alphabet.indexOf(key[keyIndex % key.length]);
+
+            let c;
+
+            if (mode === "encode") {
+
+                c = (p + k) % 26;
+
+            } else {
+
+                c = (p - k + 26) % 26;
+
+            }
+
+            let newChar = alphabet[c];
+
+            result += newChar;
+
+            steps += `${char} + ${key[keyIndex % key.length]} → ${newChar}\n`;
+
+            keyIndex++;
+
+        } else {
+
+            result += char;
+
+        }
+
+    }
+
+    steps += "\nสูตรการคำนวณ:\n";
+    steps += "Encode: C = (P + K) mod 26\n";
+    steps += "Decode: P = (C - K) mod 26";
+
+    return {
+        result,
+        steps
+    };
+
+}
+
+
+/* ================================================= */
+/* ================= ONE-TIME PAD ================== */
+/* ================================================= */
+
+function oneTimePad(text, key, mode) {
+
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    if (text.replace(/[^A-Z]/g, "").length !== key.length) {
+
+        return {
+            result: "Key ต้องมีความยาวเท่ากับข้อความพอดี",
+            steps: ""
+        };
+
+    }
+
+    let result = "";
+    let steps = "";
+
+    let keyIndex = 0;
+
+    for (let char of text) {
+
+        if (alphabet.includes(char)) {
+
+            let textValue = alphabet.indexOf(char);
+
+            let keyValue = alphabet.indexOf(key[keyIndex]);
+
+            let output;
+
+            if (mode === "encode") {
+
+                output = (textValue + keyValue) % 26;
+
+            } else {
+
+                output = (textValue - keyValue + 26) % 26;
+
+            }
+
+            let newChar = alphabet[output];
+
+            result += newChar;
+
+            steps += `${char} (${textValue}) + ${key[keyIndex]} (${keyValue}) → ${newChar}\n`;
+
+            keyIndex++;
+
+        } else {
+
+            result += char;
+
+        }
+
+    }
+
+    steps += "\nสูตรการคำนวณ:\n";
+    steps += "Encode: C = (P + K) mod 26\n";
+    steps += "Decode: P = (C - K) mod 26";
+
+    return {
+        result,
+        steps
+    };
+
+}
+
+
+/* ================================================= */
+/* ================= PLAYFAIR CIPHER =============== */
+/* ================================================= */
+
+function createPlayfairMatrix(key) {
+
+    let alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+
+    let combined = key + alphabet;
+
+    let unique = "";
+
+    for (let char of combined) {
+
+        if (char === "J") {
+            char = "I";
+        }
+
+        if (!unique.includes(char) && alphabet.includes(char)) {
+
+            unique += char;
+
+        }
+
+    }
+
+    let matrix = [];
+
+    for (let i = 0; i < 5; i++) {
+
+        matrix.push(unique.slice(i * 5, i * 5 + 5));
+
+    }
+
+    return matrix;
+
+}
+
+
+function findPosition(matrix, char) {
+
+    if (char === "J") {
+        char = "I";
+    }
+
+    for (let row = 0; row < 5; row++) {
+
+        for (let col = 0; col < 5; col++) {
+
+            if (matrix[row][col] === char) {
+
+                return {
+                    row,
+                    col
+                };
+
+            }
+
+        }
+
+    }
+
+}
+
+
+function preparePlayfairText(text) {
+
+    text = text
+        .replace(/J/g, "I")
+        .replace(/[^A-Z]/g, "");
+
+    let result = "";
+
+    let i = 0;
+
+    while (i < text.length) {
+
+        let a = text[i];
+        let b = text[i + 1];
+
+        if (!b) {
+
+            result += a + "X";
+            i++;
+
+        }
+
+        else if (a === b) {
+
+            result += a + "X";
+            i++;
+
+        }
+
+        else {
+
+            result += a + b;
+            i += 2;
+
+        }
+
+    }
+
+    return result;
+
+}
+
+
+function playfairCipher(text, key, mode) {
+
+    const matrix = createPlayfairMatrix(key);
+
+    let prepared = preparePlayfairText(text);
+
+    let result = "";
+    let steps = "";
+
+    for (let i = 0; i < prepared.length; i += 2) {
+
+        let a = prepared[i];
+        let b = prepared[i + 1];
+
+        let posA = findPosition(matrix, a);
+        let posB = findPosition(matrix, b);
+
+        let newA;
+        let newB;
+
+        if (posA.row === posB.row) {
+
+            if (mode === "encode") {
+
+                newA = matrix[posA.row][(posA.col + 1) % 5];
+                newB = matrix[posB.row][(posB.col + 1) % 5];
+
+            } else {
+
+                newA = matrix[posA.row][(posA.col + 4) % 5];
+                newB = matrix[posB.row][(posB.col + 4) % 5];
+
+            }
+
+        }
+
+        else if (posA.col === posB.col) {
+
+            if (mode === "encode") {
+
+                newA = matrix[(posA.row + 1) % 5][posA.col];
+                newB = matrix[(posB.row + 1) % 5][posB.col];
+
+            } else {
+
+                newA = matrix[(posA.row + 4) % 5][posA.col];
+                newB = matrix[(posB.row + 4) % 5][posB.col];
+
+            }
+
+        }
+
+        else {
+
+            newA = matrix[posA.row][posB.col];
+            newB = matrix[posB.row][posA.col];
+
+        }
+
+        result += newA + newB;
+
+        steps += `${a}${b} → ${newA}${newB}\n`;
+
+    }
+
+    steps += "\nPlayfair Matrix (5x5):\n";
+
+    matrix.forEach(row => {
+
+        steps += row.split("").join(" ") + "\n";
+
+    });
+
+    return {
+        result,
+        steps
+    };
+
+}
+
+</script>
+
+</body>
+</html>
